@@ -18,6 +18,8 @@ package com.example.androidthings.doorbell;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -26,6 +28,8 @@ import android.os.HandlerThread;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.things.contrib.driver.button.Button;
 import com.google.android.things.contrib.driver.button.ButtonInputDriver;
@@ -72,10 +76,13 @@ public class DoorbellActivity extends Activity {
      * An additional thread for running Cloud tasks that shouldn't block the UI.
      */
     private HandlerThread mCloudThread;
+    private ImageView photoPic;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         Log.d(TAG, "Doorbell Activity created.");
 
         // We need permission to access the camera
@@ -103,6 +110,16 @@ public class DoorbellActivity extends Activity {
         // Camera code is complicated, so we've shoved it all in this closet class for you.
         mCamera = DoorbellCamera.getInstance();
         mCamera.initializeCamera(this, mCameraHandler, mOnImageAvailableListener);
+        ImageView greenLed = (ImageView) findViewById(R.id.greenLed);
+        greenLed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Tring screen button pressed");
+                mCamera.takePicture();
+            }
+        });
+        photoPic = (ImageView) findViewById(R.id.imageView);
+
     }
 
     private void initPIO() {
@@ -166,6 +183,8 @@ public class DoorbellActivity extends Activity {
      */
     private void onPictureTaken(final byte[] imageBytes) {
         if (imageBytes != null) {
+//            Bitmap bitmapImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, null);
+//            photoPic.setImageBitmap(bitmapImage);
             final DatabaseReference log = mDatabase.getReference("logs").push();
             String imageStr = Base64.encodeToString(imageBytes, Base64.NO_WRAP | Base64.URL_SAFE);
             // upload image to firebase
