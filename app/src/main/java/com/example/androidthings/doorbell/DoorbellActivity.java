@@ -110,8 +110,8 @@ public class DoorbellActivity extends Activity {
         // Camera code is complicated, so we've shoved it all in this closet class for you.
         mCamera = DoorbellCamera.getInstance();
         mCamera.initializeCamera(this, mCameraHandler, mOnImageAvailableListener);
-        ImageView greenLed = (ImageView) findViewById(R.id.greenLed);
-        greenLed.setOnClickListener(new View.OnClickListener() {
+        android.widget.Button button = (android.widget.Button) findViewById(R.id.buttonTring);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Tring screen button pressed");
